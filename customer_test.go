@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
@@ -16,7 +17,7 @@ func TestCustomerList(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/customers.json",
 		httpmock.NewStringResponder(200, `{"customers": [{"id":1},{"id":2}]}`))
 
-	customers, err := client.Customer.List(nil)
+	customers, err := client.Customer.List(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Customer.List returned error: %v", err)
 	}
@@ -37,7 +38,7 @@ func TestCustomerCount(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/customers/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
-	cnt, err := client.Customer.Count(nil)
+	cnt, err := client.Customer.Count(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Customer.Count returned error: %v", err)
 	}
@@ -48,7 +49,7 @@ func TestCustomerCount(t *testing.T) {
 	}
 
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Customer.Count(CountOptions{CreatedAtMin: date})
+	cnt, err = client.Customer.Count(context.Background(), CountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Customer.Count returned error: %v", err)
 	}
@@ -66,7 +67,7 @@ func TestCustomerGet(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/customers/1.json",
 		httpmock.NewBytesResponder(200, loadFixture("customer.json")))
 
-	customer, err := client.Customer.Get(1, nil)
+	customer, err := client.Customer.Get(context.Background(), 1, nil)
 	if err != nil {
 		t.Errorf("Customer.Get returned error: %v", err)
 	}

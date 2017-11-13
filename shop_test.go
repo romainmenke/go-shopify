@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -14,7 +15,7 @@ func TestShopGet(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/shop.json",
 		httpmock.NewBytesResponder(200, loadFixture("shop.json")))
 
-	shop, err := client.Shop.Get(nil)
+	shop, err := client.Shop.Get(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Shop.Get returned error: %v", err)
 	}

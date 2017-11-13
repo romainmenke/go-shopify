@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
@@ -30,7 +31,7 @@ func TestVariantList(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/variants.json",
 		httpmock.NewStringResponder(200, `{"variants": [{"id":1},{"id":2}]}`))
 
-	variants, err := client.Variant.List(1, nil)
+	variants, err := client.Variant.List(context.Background(), 1, nil)
 	if err != nil {
 		t.Errorf("Variant.List returned error: %v", err)
 	}
@@ -51,7 +52,7 @@ func TestVariantCount(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1/variants/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
-	cnt, err := client.Variant.Count(1, nil)
+	cnt, err := client.Variant.Count(context.Background(), 1, nil)
 	if err != nil {
 		t.Errorf("Variant.Count returned error: %v", err)
 	}
@@ -62,7 +63,7 @@ func TestVariantCount(t *testing.T) {
 	}
 
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Variant.Count(1, CountOptions{CreatedAtMin: date})
+	cnt, err = client.Variant.Count(context.Background(), 1, CountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Variant.Count returned %d, expected %d", cnt, expected)
 	}
@@ -80,7 +81,7 @@ func TestVariantGet(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/variants/1.json",
 		httpmock.NewStringResponder(200, `{"variant": {"id":1}}`))
 
-	variant, err := client.Variant.Get(1, nil)
+	variant, err := client.Variant.Get(context.Background(), 1, nil)
 	if err != nil {
 		t.Errorf("Variant.Get returned error: %v", err)
 	}
@@ -104,7 +105,7 @@ func TestVariantCreate(t *testing.T) {
 		Option1: "Yellow",
 		Price:   &price,
 	}
-	result, err := client.Variant.Create(1, variant)
+	result, err := client.Variant.Create(context.Background(), 1, variant)
 	if err != nil {
 		t.Errorf("Variant.Create returned error: %v", err)
 	}
@@ -125,7 +126,7 @@ func TestVariantUpdate(t *testing.T) {
 
 	variant.Option1 = "Yellow"
 
-	returnedVariant, err := client.Variant.Update(variant)
+	returnedVariant, err := client.Variant.Update(context.Background(), variant)
 	if err != nil {
 		t.Errorf("Variant.Update returned error: %v", err)
 	}
@@ -139,7 +140,7 @@ func TestVariantDelete(t *testing.T) {
 	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1/variants/1.json",
 		httpmock.NewStringResponder(200, "{}"))
 
-	err := client.Variant.Delete(1, 1)
+	err := client.Variant.Delete(context.Background(), 1, 1)
 	if err != nil {
 		t.Errorf("Variant.Delete returned error: %v", err)
 	}

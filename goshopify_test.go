@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -391,7 +392,7 @@ func TestCreateAndDo(t *testing.T) {
 	for _, c := range cases {
 		httpmock.RegisterResponder("GET", c.url, c.responder)
 		body := new(MyStruct)
-		err := client.CreateAndDo("GET", c.url, nil, nil, body)
+		err := client.CreateAndDo(context.Background(), "GET", c.url, nil, nil, body)
 
 		if err != nil && fmt.Sprint(err) != fmt.Sprint(c.expected) {
 			t.Errorf("CreateAndDo(): expected error %v, actual %v", c.expected, err)
@@ -494,7 +495,7 @@ func TestCount(t *testing.T) {
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
 	// Test without options
-	cnt, err := client.Count("foocount", nil)
+	cnt, err := client.Count(context.Background(), "foocount", nil)
 	if err != nil {
 		t.Errorf("Client.Count returned error: %v", err)
 	}
@@ -506,7 +507,7 @@ func TestCount(t *testing.T) {
 
 	// Test with options
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Count("foocount", CountOptions{CreatedAtMin: date})
+	cnt, err = client.Count(context.Background(), "foocount", CountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Client.Count returned error: %v", err)
 	}

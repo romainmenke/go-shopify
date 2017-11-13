@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
@@ -23,7 +24,7 @@ func TestProductList(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products.json",
 		httpmock.NewStringResponder(200, `{"products": [{"id":1},{"id":2}]}`))
 
-	products, err := client.Product.List(nil)
+	products, err := client.Product.List(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Product.List returned error: %v", err)
 	}
@@ -44,7 +45,7 @@ func TestProductCount(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
-	cnt, err := client.Product.Count(nil)
+	cnt, err := client.Product.Count(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Product.Count returned error: %v", err)
 	}
@@ -55,7 +56,7 @@ func TestProductCount(t *testing.T) {
 	}
 
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Product.Count(CountOptions{CreatedAtMin: date})
+	cnt, err = client.Product.Count(context.Background(), CountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Product.Count returned error: %v", err)
 	}
@@ -73,7 +74,7 @@ func TestProductGet(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/products/1.json",
 		httpmock.NewStringResponder(200, `{"product": {"id":1}}`))
 
-	product, err := client.Product.Get(1, nil)
+	product, err := client.Product.Get(context.Background(), 1, nil)
 	if err != nil {
 		t.Errorf("Product.Get returned error: %v", err)
 	}
@@ -98,7 +99,7 @@ func TestProductCreate(t *testing.T) {
 		ProductType: "Snowboard",
 	}
 
-	returnedProduct, err := client.Product.Create(product)
+	returnedProduct, err := client.Product.Create(context.Background(), product)
 	if err != nil {
 		t.Errorf("Product.Create returned error: %v", err)
 	}
@@ -118,7 +119,7 @@ func TestProductUpdate(t *testing.T) {
 		ProductType: "Skateboard",
 	}
 
-	returnedProduct, err := client.Product.Update(product)
+	returnedProduct, err := client.Product.Update(context.Background(), product)
 	if err != nil {
 		t.Errorf("Product.Update returned error: %v", err)
 	}
@@ -133,7 +134,7 @@ func TestProductDelete(t *testing.T) {
 	httpmock.RegisterResponder("DELETE", "https://fooshop.myshopify.com/admin/products/1.json",
 		httpmock.NewStringResponder(200, "{}"))
 
-	err := client.Product.Delete(1)
+	err := client.Product.Delete(context.Background(), 1)
 	if err != nil {
 		t.Errorf("Product.Delete returned error: %v", err)
 	}

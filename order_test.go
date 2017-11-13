@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -64,7 +65,7 @@ func TestOrderList(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders.json",
 		httpmock.NewBytesResponder(200, loadFixture("orders.json")))
 
-	orders, err := client.Order.List(nil)
+	orders, err := client.Order.List(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Order.List returned error: %v", err)
 	}
@@ -90,7 +91,7 @@ func TestOrderListOptions(t *testing.T) {
 		Limit:  250,
 		Status: "any"}
 
-	orders, err := client.Order.List(options)
+	orders, err := client.Order.List(context.Background(), options)
 	if err != nil {
 		t.Errorf("Order.List returned error: %v", err)
 	}
@@ -111,7 +112,7 @@ func TestOrderGet(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/123456.json",
 		httpmock.NewBytesResponder(200, loadFixture("order.json")))
 
-	order, err := client.Order.Get(123456, nil)
+	order, err := client.Order.Get(context.Background(), 123456, nil)
 	if err != nil {
 		t.Errorf("Order.List returned error: %v", err)
 	}
@@ -138,7 +139,7 @@ func TestOrderGetWithTransactions(t *testing.T) {
 		ApiFeatures string `url:"_apiFeatures"`
 	}{"include-transactions"}
 
-	order, err := client.Order.Get(123456, options)
+	order, err := client.Order.Get(context.Background(), 123456, options)
 	if err != nil {
 		t.Errorf("Order.List returned error: %v", err)
 	}
@@ -166,7 +167,7 @@ func TestOrderCount(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://fooshop.myshopify.com/admin/orders/count.json?created_at_min=2016-01-01T00%3A00%3A00Z",
 		httpmock.NewStringResponder(200, `{"count": 2}`))
 
-	cnt, err := client.Order.Count(nil)
+	cnt, err := client.Order.Count(context.Background(), nil)
 	if err != nil {
 		t.Errorf("Order.Count returned error: %v", err)
 	}
@@ -177,7 +178,7 @@ func TestOrderCount(t *testing.T) {
 	}
 
 	date := time.Date(2016, time.January, 1, 0, 0, 0, 0, time.UTC)
-	cnt, err = client.Order.Count(CountOptions{CreatedAtMin: date})
+	cnt, err = client.Order.Count(context.Background(), CountOptions{CreatedAtMin: date})
 	if err != nil {
 		t.Errorf("Order.Count returned error: %v", err)
 	}
