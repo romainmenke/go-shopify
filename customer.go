@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -13,9 +14,9 @@ const customersBasePath = "admin/customers"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/customer
 type CustomerService interface {
-	List(interface{}) ([]Customer, error)
-	Count(interface{}) (int, error)
-	Get(int, interface{}) (*Customer, error)
+	List(context.Context, interface{}) ([]Customer, error)
+	Count(context.Context, interface{}) (int, error)
+	Get(context.Context, int, interface{}) (*Customer, error)
 }
 
 // CustomerServiceOp handles communication with the product related methods of
@@ -56,23 +57,23 @@ type CustomersResource struct {
 }
 
 // List customers
-func (s *CustomerServiceOp) List(options interface{}) ([]Customer, error) {
+func (s *CustomerServiceOp) List(ctx context.Context, options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s.json", customersBasePath)
 	resource := new(CustomersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Customers, err
 }
 
 // Count customers
-func (s *CustomerServiceOp) Count(options interface{}) (int, error) {
+func (s *CustomerServiceOp) Count(ctx context.Context, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", customersBasePath)
-	return s.client.Count(path, options)
+	return s.client.Count(ctx, path, options)
 }
 
 // Get customer
-func (s *CustomerServiceOp) Get(customerID int, options interface{}) (*Customer, error) {
+func (s *CustomerServiceOp) Get(ctx context.Context, customerID int, options interface{}) (*Customer, error) {
 	path := fmt.Sprintf("%s/%v.json", customersBasePath, customerID)
 	resource := new(CustomerResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Customer, err
 }

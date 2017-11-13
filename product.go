@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -11,12 +12,12 @@ const productsBasePath = "admin/products"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/product
 type ProductService interface {
-	List(interface{}) ([]Product, error)
-	Count(interface{}) (int, error)
-	Get(int, interface{}) (*Product, error)
-	Create(Product) (*Product, error)
-	Update(Product) (*Product, error)
-	Delete(int) error
+	List(context.Context, interface{}) ([]Product, error)
+	Count(context.Context, interface{}) (int, error)
+	Get(context.Context, int, interface{}) (*Product, error)
+	Create(context.Context, Product) (*Product, error)
+	Update(context.Context, Product) (*Product, error)
+	Delete(context.Context, int) error
 }
 
 // ProductServiceOp handles communication with the product related methods of
@@ -64,46 +65,46 @@ type ProductsResource struct {
 }
 
 // List products
-func (s *ProductServiceOp) List(options interface{}) ([]Product, error) {
+func (s *ProductServiceOp) List(ctx context.Context, options interface{}) ([]Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
 	resource := new(ProductsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Products, err
 }
 
 // Count products
-func (s *ProductServiceOp) Count(options interface{}) (int, error) {
+func (s *ProductServiceOp) Count(ctx context.Context, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", productsBasePath)
-	return s.client.Count(path, options)
+	return s.client.Count(ctx, path, options)
 }
 
 // Get individual product
-func (s *ProductServiceOp) Get(productID int, options interface{}) (*Product, error) {
+func (s *ProductServiceOp) Get(ctx context.Context, productID int, options interface{}) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, productID)
 	resource := new(ProductResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Product, err
 }
 
 // Create a new product
-func (s *ProductServiceOp) Create(product Product) (*Product, error) {
+func (s *ProductServiceOp) Create(ctx context.Context, product Product) (*Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
 	wrappedData := ProductResource{Product: &product}
 	resource := new(ProductResource)
-	err := s.client.Post(path, wrappedData, resource)
+	err := s.client.Post(ctx, path, wrappedData, resource)
 	return resource.Product, err
 }
 
 // Update an existing product
-func (s *ProductServiceOp) Update(product Product) (*Product, error) {
+func (s *ProductServiceOp) Update(ctx context.Context, product Product) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, product.ID)
 	wrappedData := ProductResource{Product: &product}
 	resource := new(ProductResource)
-	err := s.client.Put(path, wrappedData, resource)
+	err := s.client.Put(ctx, path, wrappedData, resource)
 	return resource.Product, err
 }
 
 // Delete an existing product
-func (s *ProductServiceOp) Delete(productID int) error {
-	return s.client.Delete(fmt.Sprintf("%s/%d.json", productsBasePath, productID))
+func (s *ProductServiceOp) Delete(ctx context.Context, productID int) error {
+	return s.client.Delete(ctx, fmt.Sprintf("%s/%d.json", productsBasePath, productID))
 }

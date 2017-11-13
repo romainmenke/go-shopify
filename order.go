@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -13,9 +14,9 @@ const ordersBasePath = "admin/orders"
 // the Shopify API.
 // See: https://help.shopify.com/api/reference/order
 type OrderService interface {
-	List(interface{}) ([]Order, error)
-	Count(interface{}) (int, error)
-	Get(int, interface{}) (*Order, error)
+	List(context.Context, interface{}) ([]Order, error)
+	Count(context.Context, interface{}) (int, error)
+	Get(context.Context, int, interface{}) (*Order, error)
 }
 
 // OrderServiceOp handles communication with the order related methods of the
@@ -191,23 +192,23 @@ type Transaction struct {
 }
 
 // List orders
-func (s *OrderServiceOp) List(options interface{}) ([]Order, error) {
+func (s *OrderServiceOp) List(ctx context.Context, options interface{}) ([]Order, error) {
 	path := fmt.Sprintf("%s.json", ordersBasePath)
 	resource := new(OrdersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Orders, err
 }
 
 // Count orders
-func (s *OrderServiceOp) Count(options interface{}) (int, error) {
+func (s *OrderServiceOp) Count(ctx context.Context, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/count.json", ordersBasePath)
-	return s.client.Count(path, options)
+	return s.client.Count(ctx, path, options)
 }
 
 // Get individual order
-func (s *OrderServiceOp) Get(orderID int, options interface{}) (*Order, error) {
+func (s *OrderServiceOp) Get(ctx context.Context, orderID int, options interface{}) (*Order, error) {
 	path := fmt.Sprintf("%s/%d.json", ordersBasePath, orderID)
 	resource := new(OrderResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Order, err
 }

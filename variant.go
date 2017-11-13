@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -13,12 +14,12 @@ const variantsBasePath = "admin/variants"
 // of the Shopify API.
 // See https://help.shopify.com/api/reference/product_variant
 type VariantService interface {
-	List(int, interface{}) ([]Variant, error)
-	Count(int, interface{}) (int, error)
-	Get(int, interface{}) (*Variant, error)
-	Create(int, Variant) (*Variant, error)
-	Update(Variant) (*Variant, error)
-	Delete(int, int) error
+	List(context.Context, int, interface{}) ([]Variant, error)
+	Count(context.Context, int, interface{}) (int, error)
+	Get(context.Context, int, interface{}) (*Variant, error)
+	Create(context.Context, int, Variant) (*Variant, error)
+	Update(context.Context, Variant) (*Variant, error)
+	Delete(context.Context, int, int) error
 }
 
 // VariantServiceOp handles communication with the variant related methods of
@@ -66,46 +67,46 @@ type VariantsResource struct {
 }
 
 // List variants
-func (s *VariantServiceOp) List(productID int, options interface{}) ([]Variant, error) {
+func (s *VariantServiceOp) List(ctx context.Context, productID int, options interface{}) ([]Variant, error) {
 	path := fmt.Sprintf("%s/%d/variants.json", productsBasePath, productID)
 	resource := new(VariantsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Variants, err
 }
 
 // Count variants
-func (s *VariantServiceOp) Count(productID int, options interface{}) (int, error) {
+func (s *VariantServiceOp) Count(ctx context.Context, productID int, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/%d/variants/count.json", productsBasePath, productID)
-	return s.client.Count(path, options)
+	return s.client.Count(ctx, path, options)
 }
 
 // Get individual variant
-func (s *VariantServiceOp) Get(variantID int, options interface{}) (*Variant, error) {
+func (s *VariantServiceOp) Get(ctx context.Context, variantID int, options interface{}) (*Variant, error) {
 	path := fmt.Sprintf("%s/%d.json", variantsBasePath, variantID)
 	resource := new(VariantResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Variant, err
 }
 
 // Create a new variant
-func (s *VariantServiceOp) Create(productID int, variant Variant) (*Variant, error) {
+func (s *VariantServiceOp) Create(ctx context.Context, productID int, variant Variant) (*Variant, error) {
 	path := fmt.Sprintf("%s/%d/variants.json", productsBasePath, productID)
 	wrappedData := VariantResource{Variant: &variant}
 	resource := new(VariantResource)
-	err := s.client.Post(path, wrappedData, resource)
+	err := s.client.Post(ctx, path, wrappedData, resource)
 	return resource.Variant, err
 }
 
 // Update existing variant
-func (s *VariantServiceOp) Update(variant Variant) (*Variant, error) {
+func (s *VariantServiceOp) Update(ctx context.Context, variant Variant) (*Variant, error) {
 	path := fmt.Sprintf("%s/%d.json", variantsBasePath, variant.ID)
 	wrappedData := VariantResource{Variant: &variant}
 	resource := new(VariantResource)
-	err := s.client.Put(path, wrappedData, resource)
+	err := s.client.Put(ctx, path, wrappedData, resource)
 	return resource.Variant, err
 }
 
 // Delete an existing product
-func (s *VariantServiceOp) Delete(productID int, variantID int) error {
-	return s.client.Delete(fmt.Sprintf("%s/%d/variants/%d.json", productsBasePath, productID, variantID))
+func (s *VariantServiceOp) Delete(ctx context.Context, productID int, variantID int) error {
+	return s.client.Delete(ctx, fmt.Sprintf("%s/%d/variants/%d.json", productsBasePath, productID, variantID))
 }

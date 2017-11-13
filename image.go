@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -9,12 +10,12 @@ import (
 // of the Shopify API.
 // See https://help.shopify.com/api/reference/product_image
 type ImageService interface {
-	List(int, interface{}) ([]Image, error)
-	Count(int, interface{}) (int, error)
-	Get(int, int, interface{}) (*Image, error)
-	Create(int, Image) (*Image, error)
-	Update(int, Image) (*Image, error)
-	Delete(int, int) error
+	List(context.Context, int, interface{}) ([]Image, error)
+	Count(context.Context, int, interface{}) (int, error)
+	Get(context.Context, int, int, interface{}) (*Image, error)
+	Create(context.Context, int, Image) (*Image, error)
+	Update(context.Context, int, Image) (*Image, error)
+	Delete(context.Context, int, int) error
 }
 
 // ImageServiceOp handles communication with the image related methods of
@@ -49,24 +50,24 @@ type ImagesResource struct {
 }
 
 // List images
-func (s *ImageServiceOp) List(productID int, options interface{}) ([]Image, error) {
+func (s *ImageServiceOp) List(ctx context.Context, productID int, options interface{}) ([]Image, error) {
 	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
 	resource := new(ImagesResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Images, err
 }
 
 // Count images
-func (s *ImageServiceOp) Count(productID int, options interface{}) (int, error) {
+func (s *ImageServiceOp) Count(ctx context.Context, productID int, options interface{}) (int, error) {
 	path := fmt.Sprintf("%s/%d/images/count.json", productsBasePath, productID)
-	return s.client.Count(path, options)
+	return s.client.Count(ctx, path, options)
 }
 
 // Get individual image
-func (s *ImageServiceOp) Get(productID int, imageID int, options interface{}) (*Image, error) {
+func (s *ImageServiceOp) Get(ctx context.Context, productID int, imageID int, options interface{}) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, imageID)
 	resource := new(ImageResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(ctx, path, resource, options)
 	return resource.Image, err
 }
 
@@ -83,24 +84,24 @@ func (s *ImageServiceOp) Get(productID int, imageID int, options interface{}) (*
 // Shopify will take the attachment.
 //
 // Shopify will accept Image.Attachment without Image.Filename.
-func (s *ImageServiceOp) Create(productID int, image Image) (*Image, error) {
+func (s *ImageServiceOp) Create(ctx context.Context, productID int, image Image) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
 	wrappedData := ImageResource{Image: &image}
 	resource := new(ImageResource)
-	err := s.client.Post(path, wrappedData, resource)
+	err := s.client.Post(ctx, path, wrappedData, resource)
 	return resource.Image, err
 }
 
 // Update an existing image
-func (s *ImageServiceOp) Update(productID int, image Image) (*Image, error) {
+func (s *ImageServiceOp) Update(ctx context.Context, productID int, image Image) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, image.ID)
 	wrappedData := ImageResource{Image: &image}
 	resource := new(ImageResource)
-	err := s.client.Put(path, wrappedData, resource)
+	err := s.client.Put(ctx, path, wrappedData, resource)
 	return resource.Image, err
 }
 
 // Delete an existing image
-func (s *ImageServiceOp) Delete(productID int, imageID int) error {
-	return s.client.Delete(fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, imageID))
+func (s *ImageServiceOp) Delete(ctx context.Context, productID int, imageID int) error {
+	return s.client.Delete(ctx, fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, imageID))
 }

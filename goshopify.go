@@ -3,6 +3,7 @@ package goshopify
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -291,11 +292,11 @@ type CountOptions struct {
 	UpdatedAtMax time.Time `url:"updated_at_max,omitempty"`
 }
 
-func (c *Client) Count(path string, options interface{}) (int, error) {
+func (c *Client) Count(ctx context.Context, path string, options interface{}) (int, error) {
 	resource := struct {
 		Count int `json:"count"`
 	}{}
-	err := c.Get(path, &resource, options)
+	err := c.Get(ctx, path, &resource, options)
 	return resource.Count, err
 }
 
@@ -308,11 +309,13 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 // The options argument is used for specifying request options such as search
 // parameters like created_at_min
 // Any data returned from Shopify will be marshalled into resource argument.
-func (c *Client) CreateAndDo(method, path string, data, options, resource interface{}) error {
+func (c *Client) CreateAndDo(ctx context.Context, method, path string, data, options, resource interface{}) error {
 	req, err := c.NewRequest(method, path, data, options)
 	if err != nil {
 		return err
 	}
+
+	req = req.WithContext(ctx)
 
 	err = c.Do(req, resource)
 	if err != nil {
@@ -324,23 +327,23 @@ func (c *Client) CreateAndDo(method, path string, data, options, resource interf
 
 // Get performs a GET request for the given path and saves the result in the
 // given resource.
-func (c *Client) Get(path string, resource, options interface{}) error {
-	return c.CreateAndDo("GET", path, nil, options, resource)
+func (c *Client) Get(ctx context.Context, path string, resource, options interface{}) error {
+	return c.CreateAndDo(ctx, "GET", path, nil, options, resource)
 }
 
 // Post performs a POST request for the given path and saves the result in the
 // given resource.
-func (c *Client) Post(path string, data, resource interface{}) error {
-	return c.CreateAndDo("POST", path, data, nil, resource)
+func (c *Client) Post(ctx context.Context, path string, data, resource interface{}) error {
+	return c.CreateAndDo(ctx, "POST", path, data, nil, resource)
 }
 
 // Put performs a PUT request for the given path and saves the result in the
 // given resource.
-func (c *Client) Put(path string, data, resource interface{}) error {
-	return c.CreateAndDo("PUT", path, data, nil, resource)
+func (c *Client) Put(ctx context.Context, path string, data, resource interface{}) error {
+	return c.CreateAndDo(ctx, "PUT", path, data, nil, resource)
 }
 
 // Delete performs a DELETE request for the given path
-func (c *Client) Delete(path string) error {
-	return c.CreateAndDo("DELETE", path, nil, nil, nil)
+func (c *Client) Delete(ctx context.Context, path string) error {
+	return c.CreateAndDo(ctx, "DELETE", path, nil, nil, nil)
 }
