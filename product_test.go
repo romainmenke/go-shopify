@@ -29,7 +29,7 @@ func TestProductList(t *testing.T) {
 		t.Errorf("Product.List returned error: %v", err)
 	}
 
-	expected := []Product{{ID: 1}, {ID: 2}}
+	expected := []*Product{{ID: 1}, {ID: 2}}
 	if !reflect.DeepEqual(products, expected) {
 		t.Errorf("Product.List returned %+v, expected %+v", products, expected)
 	}
@@ -92,7 +92,7 @@ func TestProductCreate(t *testing.T) {
 	httpmock.RegisterResponder("POST", "https://fooshop.myshopify.com/admin/products.json",
 		httpmock.NewBytesResponder(200, loadFixture("product.json")))
 
-	product := Product{
+	product := &Product{
 		Title:       "Burton Custom Freestyle 151",
 		BodyHTML:    "<strong>Good snowboard!<\\/strong>",
 		Vendor:      "Burton",
@@ -114,7 +114,7 @@ func TestProductUpdate(t *testing.T) {
 	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/products/1.json",
 		httpmock.NewBytesResponder(200, loadFixture("product.json")))
 
-	product := Product{
+	product := &Product{
 		ID:          1,
 		ProductType: "Skateboard",
 	}

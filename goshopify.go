@@ -48,13 +48,14 @@ type Client struct {
 	token string
 
 	// Services used for communicating with the API
-	Product  ProductService
-	Customer CustomerService
-	Order    OrderService
-	Shop     ShopService
-	Webhook  WebhookService
-	Variant  VariantService
-	Image    ImageService
+	Product   ProductService
+	Customer  CustomerService
+	Order     OrderService
+	Shop      ShopService
+	Webhook   WebhookService
+	Variant   VariantService
+	Image     ImageService
+	Metafield MetafieldService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -116,7 +117,7 @@ func (c *Client) NewRequest(method, urlStr string, body, options interface{}) (*
 	}
 
 	// A bit of JSON ceremony
-	var js []byte = nil
+	var js []byte
 
 	if body != nil {
 		js, err = json.Marshal(body)
@@ -141,7 +142,7 @@ func (c *Client) NewRequest(method, urlStr string, body, options interface{}) (*
 	return req, nil
 }
 
-// Returns a new Shopify API client with an already authenticated shopname and
+// NewClient returns a new Shopify API client with an already authenticated shopname and
 // token.
 func NewClient(app App, shopName, token string) *Client {
 	httpClient := http.DefaultClient
@@ -156,6 +157,7 @@ func NewClient(app App, shopName, token string) *Client {
 	c.Webhook = &WebhookServiceOp{client: c}
 	c.Variant = &VariantServiceOp{client: c}
 	c.Image = &ImageServiceOp{client: c}
+	c.Metafield = &MetafieldServiceOp{client: c}
 
 	return c
 }

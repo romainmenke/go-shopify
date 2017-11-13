@@ -36,7 +36,7 @@ func TestVariantList(t *testing.T) {
 		t.Errorf("Variant.List returned error: %v", err)
 	}
 
-	expected := []Variant{{ID: 1}, {ID: 2}}
+	expected := []*Variant{{ID: 1}, {ID: 2}}
 	if !reflect.DeepEqual(variants, expected) {
 		t.Errorf("Variant.List returned %+v, expected %+v", variants, expected)
 	}
@@ -101,7 +101,7 @@ func TestVariantCreate(t *testing.T) {
 
 	price := decimal.NewFromFloat(1)
 
-	variant := Variant{
+	variant := &Variant{
 		Option1: "Yellow",
 		Price:   &price,
 	}
@@ -119,7 +119,7 @@ func TestVariantUpdate(t *testing.T) {
 	httpmock.RegisterResponder("PUT", "https://fooshop.myshopify.com/admin/variants/1.json",
 		httpmock.NewBytesResponder(200, loadFixture("variant.json")))
 
-	variant := Variant{
+	variant := &Variant{
 		ID:      1,
 		Option1: "Green",
 	}

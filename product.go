@@ -12,11 +12,11 @@ const productsBasePath = "admin/products"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/product
 type ProductService interface {
-	List(context.Context, interface{}) ([]Product, error)
+	List(context.Context, interface{}) ([]*Product, error)
 	Count(context.Context, interface{}) (int, error)
 	Get(context.Context, int, interface{}) (*Product, error)
-	Create(context.Context, Product) (*Product, error)
-	Update(context.Context, Product) (*Product, error)
+	Create(context.Context, *Product) (*Product, error)
+	Update(context.Context, *Product) (*Product, error)
 	Delete(context.Context, int) error
 }
 
@@ -61,11 +61,11 @@ type ProductResource struct {
 
 // Represents the result from the products.json endpoint
 type ProductsResource struct {
-	Products []Product `json:"products"`
+	Products []*Product `json:"products"`
 }
 
 // List products
-func (s *ProductServiceOp) List(ctx context.Context, options interface{}) ([]Product, error) {
+func (s *ProductServiceOp) List(ctx context.Context, options interface{}) ([]*Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
 	resource := new(ProductsResource)
 	err := s.client.Get(ctx, path, resource, options)
@@ -87,18 +87,18 @@ func (s *ProductServiceOp) Get(ctx context.Context, productID int, options inter
 }
 
 // Create a new product
-func (s *ProductServiceOp) Create(ctx context.Context, product Product) (*Product, error) {
+func (s *ProductServiceOp) Create(ctx context.Context, product *Product) (*Product, error) {
 	path := fmt.Sprintf("%s.json", productsBasePath)
-	wrappedData := ProductResource{Product: &product}
+	wrappedData := ProductResource{Product: product}
 	resource := new(ProductResource)
 	err := s.client.Post(ctx, path, wrappedData, resource)
 	return resource.Product, err
 }
 
 // Update an existing product
-func (s *ProductServiceOp) Update(ctx context.Context, product Product) (*Product, error) {
+func (s *ProductServiceOp) Update(ctx context.Context, product *Product) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, product.ID)
-	wrappedData := ProductResource{Product: &product}
+	wrappedData := ProductResource{Product: product}
 	resource := new(ProductResource)
 	err := s.client.Put(ctx, path, wrappedData, resource)
 	return resource.Product, err

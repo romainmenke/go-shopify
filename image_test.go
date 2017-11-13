@@ -8,7 +8,10 @@ import (
 	"gopkg.in/jarcoal/httpmock.v1"
 )
 
-func imageTests(t *testing.T, image Image) {
+func imageTests(t *testing.T, image *Image) {
+	if image == nil {
+		t.Fatal("unexpected nil image")
+	}
 	// Check that ID is set
 	expectedImageID := 1
 	if image.ID != expectedImageID {
@@ -134,7 +137,7 @@ func TestImageGet(t *testing.T) {
 		t.Errorf("Image.Get returned error: %v", err)
 	}
 
-	imageTests(t, *image)
+	imageTests(t, image)
 }
 
 func TestImageCreate(t *testing.T) {
@@ -148,7 +151,7 @@ func TestImageCreate(t *testing.T) {
 	variantIds[0] = 808950810
 	variantIds[1] = 808950811
 
-	image := Image{
+	image := &Image{
 		Src:        "https://cdn.shopify.com/s/files/1/0006/9093/3842/products/ipod-nano.png?v=1500937783",
 		VariantIds: variantIds,
 	}
@@ -157,7 +160,7 @@ func TestImageCreate(t *testing.T) {
 		t.Errorf("Image.Create returned error %v", err)
 	}
 
-	imageTests(t, *returnedImage)
+	imageTests(t, returnedImage)
 }
 
 func TestImageUpdate(t *testing.T) {
@@ -171,7 +174,7 @@ func TestImageUpdate(t *testing.T) {
 	variantIds := make([]int, 2)
 	variantIds[0] = 808950810
 	variantIds[1] = 457924702
-	existingImage := Image{
+	existingImage := &Image{
 		ID:         1,
 		VariantIds: variantIds,
 	}
@@ -182,7 +185,7 @@ func TestImageUpdate(t *testing.T) {
 		t.Errorf("Image.Update returned error %v", err)
 	}
 
-	imageTests(t, *returnedImage)
+	imageTests(t, returnedImage)
 }
 
 func TestImageDelete(t *testing.T) {

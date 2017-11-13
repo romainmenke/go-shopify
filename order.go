@@ -14,7 +14,7 @@ const ordersBasePath = "admin/orders"
 // the Shopify API.
 // See: https://help.shopify.com/api/reference/order
 type OrderService interface {
-	List(context.Context, interface{}) ([]Order, error)
+	List(context.Context, interface{}) ([]*Order, error)
 	Count(context.Context, interface{}) (int, error)
 	Get(context.Context, int, interface{}) (*Order, error)
 }
@@ -145,7 +145,7 @@ type OrderResource struct {
 
 // Represents the result from the orders.json endpoint
 type OrdersResource struct {
-	Orders []Order `json:"orders"`
+	Orders []*Order `json:"orders"`
 }
 
 type PaymentDetails struct {
@@ -197,7 +197,7 @@ type Transaction struct {
 }
 
 // List orders
-func (s *OrderServiceOp) List(ctx context.Context, options interface{}) ([]Order, error) {
+func (s *OrderServiceOp) List(ctx context.Context, options interface{}) ([]*Order, error) {
 	path := fmt.Sprintf("%s.json", ordersBasePath)
 	resource := new(OrdersResource)
 	err := s.client.Get(ctx, path, resource, options)

@@ -10,11 +10,11 @@ import (
 // of the Shopify API.
 // See https://help.shopify.com/api/reference/product_image
 type ImageService interface {
-	List(context.Context, int, interface{}) ([]Image, error)
+	List(context.Context, int, interface{}) ([]*Image, error)
 	Count(context.Context, int, interface{}) (int, error)
 	Get(context.Context, int, int, interface{}) (*Image, error)
-	Create(context.Context, int, Image) (*Image, error)
-	Update(context.Context, int, Image) (*Image, error)
+	Create(context.Context, int, *Image) (*Image, error)
+	Update(context.Context, int, *Image) (*Image, error)
 	Delete(context.Context, int, int) error
 }
 
@@ -46,11 +46,11 @@ type ImageResource struct {
 
 // ImagesResource represents the result from the products/X/images.json endpoint
 type ImagesResource struct {
-	Images []Image `json:"images"`
+	Images []*Image `json:"images"`
 }
 
 // List images
-func (s *ImageServiceOp) List(ctx context.Context, productID int, options interface{}) ([]Image, error) {
+func (s *ImageServiceOp) List(ctx context.Context, productID int, options interface{}) ([]*Image, error) {
 	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
 	resource := new(ImagesResource)
 	err := s.client.Get(ctx, path, resource, options)
@@ -84,18 +84,18 @@ func (s *ImageServiceOp) Get(ctx context.Context, productID int, imageID int, op
 // Shopify will take the attachment.
 //
 // Shopify will accept Image.Attachment without Image.Filename.
-func (s *ImageServiceOp) Create(ctx context.Context, productID int, image Image) (*Image, error) {
+func (s *ImageServiceOp) Create(ctx context.Context, productID int, image *Image) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images.json", productsBasePath, productID)
-	wrappedData := ImageResource{Image: &image}
+	wrappedData := ImageResource{Image: image}
 	resource := new(ImageResource)
 	err := s.client.Post(ctx, path, wrappedData, resource)
 	return resource.Image, err
 }
 
 // Update an existing image
-func (s *ImageServiceOp) Update(ctx context.Context, productID int, image Image) (*Image, error) {
+func (s *ImageServiceOp) Update(ctx context.Context, productID int, image *Image) (*Image, error) {
 	path := fmt.Sprintf("%s/%d/images/%d.json", productsBasePath, productID, image.ID)
-	wrappedData := ImageResource{Image: &image}
+	wrappedData := ImageResource{Image: image}
 	resource := new(ImageResource)
 	err := s.client.Put(ctx, path, wrappedData, resource)
 	return resource.Image, err

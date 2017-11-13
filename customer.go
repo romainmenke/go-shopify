@@ -14,7 +14,7 @@ const customersBasePath = "admin/customers"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/customer
 type CustomerService interface {
-	List(context.Context, interface{}) ([]Customer, error)
+	List(context.Context, interface{}) ([]*Customer, error)
 	Count(context.Context, interface{}) (int, error)
 	Get(context.Context, int, interface{}) (*Customer, error)
 }
@@ -53,11 +53,11 @@ type CustomerResource struct {
 
 // Represents the result from the customers.json endpoint
 type CustomersResource struct {
-	Customers []Customer `json:"customers"`
+	Customers []*Customer `json:"customers"`
 }
 
 // List customers
-func (s *CustomerServiceOp) List(ctx context.Context, options interface{}) ([]Customer, error) {
+func (s *CustomerServiceOp) List(ctx context.Context, options interface{}) ([]*Customer, error) {
 	path := fmt.Sprintf("%s.json", customersBasePath)
 	resource := new(CustomersResource)
 	err := s.client.Get(ctx, path, resource, options)

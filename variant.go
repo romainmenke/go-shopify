@@ -14,11 +14,11 @@ const variantsBasePath = "admin/variants"
 // of the Shopify API.
 // See https://help.shopify.com/api/reference/product_variant
 type VariantService interface {
-	List(context.Context, int, interface{}) ([]Variant, error)
+	List(context.Context, int, interface{}) ([]*Variant, error)
 	Count(context.Context, int, interface{}) (int, error)
 	Get(context.Context, int, interface{}) (*Variant, error)
-	Create(context.Context, int, Variant) (*Variant, error)
-	Update(context.Context, Variant) (*Variant, error)
+	Create(context.Context, int, *Variant) (*Variant, error)
+	Update(context.Context, *Variant) (*Variant, error)
 	Delete(context.Context, int, int) error
 }
 
@@ -63,11 +63,11 @@ type VariantResource struct {
 
 // VariantsResource represents the result from the products/X/variants.json endpoint
 type VariantsResource struct {
-	Variants []Variant `json:"variants"`
+	Variants []*Variant `json:"variants"`
 }
 
 // List variants
-func (s *VariantServiceOp) List(ctx context.Context, productID int, options interface{}) ([]Variant, error) {
+func (s *VariantServiceOp) List(ctx context.Context, productID int, options interface{}) ([]*Variant, error) {
 	path := fmt.Sprintf("%s/%d/variants.json", productsBasePath, productID)
 	resource := new(VariantsResource)
 	err := s.client.Get(ctx, path, resource, options)
@@ -89,18 +89,18 @@ func (s *VariantServiceOp) Get(ctx context.Context, variantID int, options inter
 }
 
 // Create a new variant
-func (s *VariantServiceOp) Create(ctx context.Context, productID int, variant Variant) (*Variant, error) {
+func (s *VariantServiceOp) Create(ctx context.Context, productID int, variant *Variant) (*Variant, error) {
 	path := fmt.Sprintf("%s/%d/variants.json", productsBasePath, productID)
-	wrappedData := VariantResource{Variant: &variant}
+	wrappedData := VariantResource{Variant: variant}
 	resource := new(VariantResource)
 	err := s.client.Post(ctx, path, wrappedData, resource)
 	return resource.Variant, err
 }
 
 // Update existing variant
-func (s *VariantServiceOp) Update(ctx context.Context, variant Variant) (*Variant, error) {
+func (s *VariantServiceOp) Update(ctx context.Context, variant *Variant) (*Variant, error) {
 	path := fmt.Sprintf("%s/%d.json", variantsBasePath, variant.ID)
-	wrappedData := VariantResource{Variant: &variant}
+	wrappedData := VariantResource{Variant: variant}
 	resource := new(VariantResource)
 	err := s.client.Put(ctx, path, wrappedData, resource)
 	return resource.Variant, err

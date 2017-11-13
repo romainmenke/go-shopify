@@ -9,7 +9,11 @@ import (
 	"gopkg.in/jarcoal/httpmock.v1"
 )
 
-func orderTests(t *testing.T, order Order) {
+func orderTests(t *testing.T, order *Order) {
+	if order == nil {
+		t.Fatal("unexpected nil order")
+	}
+
 	// Check that dates are parsed
 	d := time.Date(2016, time.May, 17, 4, 14, 36, 0, time.UTC)
 	if !d.Equal(*order.CreatedAt) {
@@ -125,7 +129,7 @@ func TestOrderGet(t *testing.T) {
 		t.Errorf("Order.CancelledAt returned %+v, expected %+v", order.CancelledAt, d)
 	}
 
-	orderTests(t, *order)
+	orderTests(t, order)
 }
 
 func TestOrderGetWithTransactions(t *testing.T) {
@@ -144,7 +148,7 @@ func TestOrderGetWithTransactions(t *testing.T) {
 		t.Errorf("Order.List returned error: %v", err)
 	}
 
-	orderTests(t, *order)
+	orderTests(t, order)
 
 	// Check transactions is not nil
 	if order.Transactions == nil {

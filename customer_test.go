@@ -22,7 +22,7 @@ func TestCustomerList(t *testing.T) {
 		t.Errorf("Customer.List returned error: %v", err)
 	}
 
-	expected := []Customer{{ID: 1}, {ID: 2}}
+	expected := []*Customer{{ID: 1}, {ID: 2}}
 	if !reflect.DeepEqual(customers, expected) {
 		t.Errorf("Customer.List returned %+v, expected %+v", customers, expected)
 	}
